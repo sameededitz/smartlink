@@ -39,7 +39,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/check-device', [UserController::class, 'checkDevice'])->name('api.check.device');
 
     Route::delete('/user/device/delete', [UserController::class, 'deleteDevice'])->name('api.delete.device');
-
 });
 
 Route::post('/email/resend-verification', [VerifyController::class, 'resendVerify'])->name('api.verify.resend');
