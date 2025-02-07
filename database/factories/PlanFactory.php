@@ -20,8 +20,7 @@ class PlanFactory extends Factory
             'name' => fake()->monthName(),
             'description' => fake()->text(20),
             'price' => fake()->numberBetween(10, 100),
-            'duration' => 'weekly',
-            'type' => 'trial',
+            'duration' => fake()->numberBetween(1, 30),
         ];
     }
     public function trial(): Factory
@@ -31,8 +30,9 @@ class PlanFactory extends Factory
                 'name' => 'Free Trial',
                 'description' => 'Free Trial Plan (Dont Delete)',
                 'price' => '0.00',
-                'duration' => 'daily',
-                'type' => 'trial',
+                'duration' => '3',
+                'duration_unit' => 'day',
+                'device_limit' => '1',
             ];
         });
     }
