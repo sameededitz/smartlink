@@ -14,12 +14,12 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
-Route::get('/optimize', function (Request $request) {
+Route::get('/optimize', function () {
     Artisan::call('optimize:clear');
     return 'Optimized';
 });
 
-Route::get('/storage-link', function (Request $request) {
+Route::get('/storage-link', function () {
     Artisan::call('storage:link');
     return 'Linked';
 });
@@ -30,7 +30,7 @@ Route::get('password/reset/view/{email}/{token}', [VerifyController::class, 'vie
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'LoginForm'])->name('login');
 
-    Route::post('/login-user', [AuthController::class, 'login'])->name('login-user')->middleware('throttle:login-user');
+    Route::post('/login', [AuthController::class, 'login'])->name('login')->middleware('throttle:login');
 
     Route::get('/signup', [AuthController::class, 'signupForm'])->name('signup');
 

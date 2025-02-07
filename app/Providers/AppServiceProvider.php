@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
             UpdateLastLogin::class
         );
 
-        RateLimiter::for('login-user', function (Request $request) {
+        RateLimiter::for('login', function (Request $request) {
             return Limit::perMinute(5)->by($request->email . $request->ip());
         });
     }

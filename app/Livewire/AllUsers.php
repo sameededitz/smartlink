@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Plan;
 use App\Models\Purchase;
 use App\Models\User;
+use Carbon\Carbon;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -41,24 +42,45 @@ class AllUsers extends Component
 
         $plan = Plan::find($this->plan_id);
 
-        $expirationDate = match ($plan->duration) {
-            'daily' => now()->addDay(),
-            'weekly' => now()->addWeek(),
-            'monthly' => now()->addMonth(),
-            '3-month' => now()->addMonths(3),
-            '6-month' => now()->addMonths(6),
-            'yearly' => now()->addYear(),
-            '2-year' => now()->addYears(2),
-            '3-year' => now()->addYears(3),
-            default => now()->addDays(2),
-        };
+        $purchase = $this->selectedUser->purchases()
+            ->where('is_active', true)
+            ->where('expires_at', '>', now())
+            ->first();
 
-        $this->selectedUser->purchases()->create([
-            'plan_id' => $plan->id,
-            'started_at' => now(),
-            'expires_at' => $expirationDate,
-            'is_active' => true,
-        ]);
+        $duration = $plan->duration;
+
+        if ($purchase) {
+            $currentExpiresAt = Carbon::parse($purchase->expires_at);
+
+            // Extend the expiration date instead of replacing it
+            $newExpiresAt = match ($plan->duration_unit) {
+                'day'   => $currentExpiresAt->addDays($duration),
+                'week'  => $currentExpiresAt->addWeeks($duration),
+                'month' => $currentExpiresAt->addMonths($duration),
+                'year'  => $currentExpiresAt->addYears($duration),
+                default => $currentExpiresAt->addDays(7),
+            };
+
+            // Update the purchase with the new expiration date
+            $purchase->update([
+                'expires_at' => $newExpiresAt,
+            ]);
+        } else {
+            $expiresAt = match ($plan->duration_unit) {
+                'day'   => now()->addDays($duration),
+                'week'  => now()->addWeeks($duration),
+                'month' => now()->addMonths($duration),
+                'year'  => now()->addYears($duration),
+                default => now()->addDays(7),
+            };
+            // Create a new purchase
+            $purchase = $this->selectedUser->purchases()->create([
+                'plan_id' => $plan->id,
+                'started_at' => now(),
+                'expires_at' => $expiresAt,
+                'is_active' => true,
+            ]);
+        }
 
         $this->selectedUser = null;
         $this->plan_id = '';

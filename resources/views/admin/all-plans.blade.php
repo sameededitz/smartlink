@@ -39,8 +39,9 @@
                         <th scope="col">Price</th>
                         <th scope="col">Description</th>
                         <th scope="col">Duration</th>
-                        <th scope="col">Type</th>
+                        <th scope="col">Device Limit</th>
                         <th scope="col">Time</th>
+                        <th scope="col">Created</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
@@ -51,9 +52,10 @@
                             <td>{{ $plan->name }}</td>
                             <td>${{ $plan->price }}</td>
                             <td>{{ $plan->description }}</td>
-                            <td>{{ Str::title($plan->duration) }}</td>
-                            <td>{{ Str::title(str_replace('_', ' ', $plan->type)) }}</td>
-                            <td>C:{{ $plan->created_at->diffForHumans() }}<br>U:{{ $plan->updated_at->diffForHumans() }}
+                            <td>{{ $plan->duration }} {{ Str::title($plan->duration_unit) }} </td>
+                            <td>{{ $plan->device_limit }}</td>
+                            <td>
+                                C:{{ $plan->created_at->diffForHumans() }}
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">

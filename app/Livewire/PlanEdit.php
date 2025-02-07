@@ -23,7 +23,10 @@ class PlanEdit extends Component
     public $duration;
 
     #[Validate]
-    public $type;
+    public $duration_unit;
+
+    #[Validate]
+    public $device_limit;
 
     protected function rules()
     {
@@ -31,8 +34,9 @@ class PlanEdit extends Component
             'name' => 'required|string|max:60',
             'description' => 'nullable|string|max:100',
             'price' => 'required',
-            'duration' => 'required|in:daily,weekly,monthly,3-month,6-month,yearly,2-year,3-year',
-            'type' => 'required|in:trial,non_trial',
+            'duration' => 'required|numeric',
+            'duration_unit' => 'required|in:day,week,month,year',
+            'device_limit' => 'required|numeric',
         ];
     }
 
@@ -43,7 +47,8 @@ class PlanEdit extends Component
         $this->description = $plan->description;
         $this->price = $plan->price;
         $this->duration = $plan->duration;
-        $this->type = $plan->type;
+        $this->duration_unit = $plan->duration_unit;
+        $this->device_limit = $plan->device_limit;
     }
 
     public function update()
@@ -54,7 +59,8 @@ class PlanEdit extends Component
             'description' => $this->description,
             'price' => $this->price,
             'duration' => $this->duration,
-            'type' => $this->type,
+            'duration_unit' => $this->duration_unit,
+            'device_limit' => $this->device_limit,
         ]);
         return redirect()->route('all-plans')->with([
             'status' => 'success',
