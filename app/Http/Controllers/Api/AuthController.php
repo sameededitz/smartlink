@@ -105,32 +105,13 @@ class AuthController extends Controller
                 'platform'    => $request->platform,
             ];
 
-            if ($user->canRegisterDevice($deviceId)) {
-                $result = $user->registerDevice($deviceId, $devicedetails);
-
-                if ($result === 'already_registered') {
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Device is already registered.',
-                    ], 200);
-                }
-
-                if ($result === 'device_limit_exceeded') {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'You have reached the maximum number of devices allowed. Please remove a device to add a new one.'
-                    ], 403);
-                }
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Device registered successfully.',
-                ], 200);
-            } else {
+            if (!$user->canRegisterDevice($deviceId)) {
                 return response()->json([
                     'status' => false,
                     'message' => 'You have reached the maximum number of devices allowed. Please remove a device to add a new one.'
                 ], 403);
             }
+            $user->registerDevice($deviceId, $devicedetails);
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
