@@ -111,7 +111,13 @@ class AuthController extends Controller
                     'message' => 'You have reached the maximum number of devices allowed. Please remove a device to add a new one.'
                 ], 403);
             }
-            $user->registerDevice($deviceId, $devicedetails);
+            $result = $user->registerDevice($deviceId, $devicedetails);
+            if ($result === 'device_limit_exceeded') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You have reached the maximum number of devices allowed. Please remove a device to add a new one.'
+                ], 403);
+            }
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
