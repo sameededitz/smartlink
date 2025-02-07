@@ -25,7 +25,7 @@ Route::get('/storage-link', function () {
 });
 Route::get('/migrate-fresh', function () {
     Artisan::call('migrate:fresh --seed');
-    return 'Linked';
+    return 'Migrated and seeded';
 });
 
 Route::get('email/verify/view/{id}/{hash}', [VerifyController::class, 'viewEmail'])->name('email.verification.view');
