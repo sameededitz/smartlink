@@ -36,27 +36,15 @@ class UserController extends Controller
         /** @var \App\Models\User $user **/
         $user = Auth::user();
 
-        if ($user->canRegisterDevice($deviceId)) {
-            $result = $user->registerDevice($deviceId, $devicedetails);
-
-            if ($result === 'already_registered') {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Device is already registered.',
-                ], 200);
-            }
-
-            if ($result === 'device_limit_exceeded') {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'You have reached the maximum number of devices allowed. Please remove a device to add a new one.'
-                ], 403);
-            }
+        if (!$user->canRegisterDevice($deviceId)) {
             return response()->json([
-                'status' => true,
-                'message' => 'Device registered successfully.',
-            ], 200);
-        } else {
+                'status' => false,
+                'message' => 'You have reached the maximum number of devices allowed. Please remove a device to add a new one.'
+            ], 403);
+        }
+        $result = $user->registerDevice($deviceId, $devicedetails);
+
+        if ($result === 'device_limit_exceeded') {
             return response()->json([
                 'status' => false,
                 'message' => 'You have reached the maximum number of devices allowed. Please remove a device to add a new one.'
