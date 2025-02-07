@@ -40,7 +40,6 @@
                         <th scope="col">Description</th>
                         <th scope="col">Duration</th>
                         <th scope="col">Device Limit</th>
-                        <th scope="col">Time</th>
                         <th scope="col">Created</th>
                         <th scope="col">Action</th>
                     </tr>
