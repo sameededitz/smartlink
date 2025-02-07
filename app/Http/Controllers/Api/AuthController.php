@@ -56,6 +56,10 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'password' => 'required|min:8',
+            'device_name' => 'required',
+            'device_token' => 'nullable',
+            'device_id' => 'required',
+            'platform' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -92,6 +96,42 @@ class AuthController extends Controller
                 ], 400);
             }
 
+            $deviceId = $request->device_id;
+            $devicedetails = [
+                'device_name' => $request->device_name,
+                'device_id'   => $deviceId,
+                'device_token' => $request->device_token,
+                'ip_address'  => $request->ip(),
+                'platform'    => $request->platform,
+            ];
+
+            if ($user->canRegisterDevice($deviceId)) {
+                $result = $user->registerDevice($deviceId, $devicedetails);
+
+                if ($result === 'already_registered') {
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Device is already registered.',
+                    ], 200);
+                }
+
+                if ($result === 'device_limit_exceeded') {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'You have reached the maximum number of devices allowed. Please remove a device to add a new one.'
+                    ], 403);
+                }
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Device registered successfully.',
+                ], 200);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You have reached the maximum number of devices allowed. Please remove a device to add a new one.'
+                ], 403);
+            }
+
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
@@ -122,7 +162,7 @@ class AuthController extends Controller
         ], 200);
     }
 
-    public function user(Request $request)
+    public function user()
     {
         $user = Auth::user();
         /** @var \App\Models\User $user **/

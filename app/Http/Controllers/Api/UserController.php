@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -38,7 +37,21 @@ class UserController extends Controller
         $user = Auth::user();
 
         if ($user->canRegisterDevice($deviceId)) {
-            $user->registerDevice($deviceId, $devicedetails);
+            $result = $user->registerDevice($deviceId, $devicedetails);
+
+            if ($result === 'already_registered') {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Device is already registered.',
+                ], 200);
+            }
+
+            if ($result === 'device_limit_exceeded') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You have reached the maximum number of devices allowed. Please remove a device to add a new one.'
+                ], 403);
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'Device registered successfully.',

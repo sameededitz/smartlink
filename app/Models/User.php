@@ -161,9 +161,15 @@ class User extends Authenticatable implements MustVerifyEmail
         $existingDevice = UserDevice::where('device_id', $deviceId)->first();
 
         if ($existingDevice) {
-            // Check if the device is already assigned to this user
+            // Check if the device is already assigned to this user.
             if ($existingDevice->user_id === $this->id) {
-                return false; // Device already registered under the current user
+                // Return a specific indicator that it's already registered.
+                return 'already_registered';
+            }
+    
+            // Optionally, check device limit before reassigning
+            if ($this->devices()->count() >= $this->getSubscriptionDeviceLimit()) {
+                return 'device_limit_exceeded';
             }
 
             // Reassign the device to the current user
@@ -189,7 +195,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ]);
         }
 
-        return false;
+        return 'device_limit_exceeded';
     }
 
     public function unregisterDevice($deviceId)
