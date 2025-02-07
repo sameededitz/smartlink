@@ -25,7 +25,7 @@
                         @endforeach
                     </div>
                 @endif
-                <form action="{{ route('login-user') }}" method="POST">
+                <form action="{{ route('login') }}" method="POST">
                     @csrf
                     <div class="icon-field mb-16">
                         <span class="icon top-50 translate-middle-y">
